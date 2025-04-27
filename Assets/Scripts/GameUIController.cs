@@ -59,6 +59,7 @@ public class GameUIController : MonoBehaviour
     {
         isPlaying = false;
         uiView.SetStatus("GAME OVER!");
+        AudioManager.Instance.PlayExplosion();
         AudioManager.Instance.PlayLose();
     }
 }

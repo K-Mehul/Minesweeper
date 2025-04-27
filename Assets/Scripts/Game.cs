@@ -152,18 +152,16 @@ public class Game : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-            NewGame();
-        else if (!_gameOver)
+        //if (Input.GetKeyDown(KeyCode.E))
+        //    NewGame();
+        if (!_gameOver)
         {
             if (Input.GetMouseButtonDown(1))
             {
-                AudioManager.Instance.PlayClick();
                 Flag();
             }
             else if (Input.GetMouseButtonDown(0))
             {
-                AudioManager.Instance.PlayClick();
                 Reveal();
             }
         }
@@ -195,12 +193,13 @@ public class Game : MonoBehaviour
                 break;
         }
 
+        AudioManager.Instance.PlayClick();
+
         _board.Draw(_state);
     }
 
     private void Explode(Cell cell)
     {
-        Debug.Log("Game Over");
         _gameOver = true;
         _onLose?.Invoke();
         cell.revelead = true;
@@ -250,6 +249,9 @@ public class Game : MonoBehaviour
 
         cell.flagged = !cell.flagged;
         _state[cellPosition.x, cellPosition.y] = cell;
+
+        AudioManager.Instance.PlayClick();
+
         _board.Draw(_state);
     }
 
