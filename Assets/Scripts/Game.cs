@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Game : MonoBehaviour
 {
@@ -12,6 +12,9 @@ public class Game : MonoBehaviour
     private Cell[,] _state;
     private Camera _cam;
 
+    private System.Action _onWin;
+    private System.Action _onLose;
+
     private void OnValidate()
     {
         _mineCount = Mathf.Clamp(_mineCount, 0, _width * _height);
@@ -24,9 +27,26 @@ public class Game : MonoBehaviour
         _board = GetComponentInChildren<Board>();
     }
 
-    private void Start()
+    public void StartNewGame(System.Action onWin, System.Action onLose)
     {
+        _onWin = onWin;
+        _onLose = onLose;
+
+
+        // 🧹 Clear existing board if any
+        if (_board != null)
+        {
+            _board.Clear();
+        }
+
         NewGame();
+    }
+
+    public void SetSettings(int width, int height, int mineCount)
+    {
+        _width = width;
+        _height = height;
+        _mineCount = mineCount;
     }
 
     private void NewGame()
@@ -38,8 +58,14 @@ public class Game : MonoBehaviour
         GenerateMines();
         GenerateNumbers();
 
-        _cam.transform.position = new Vector3(_width / 2f, _height / 2f, -10f);
         _board.Draw(_state);
+
+        _cam.transform.position = new Vector3(_width / 2f, _height / 2f, -10f);
+
+        float aspectRatio = (float)Screen.width / Screen.height;
+        float verticalSize = _height / 2f + 1f;
+        float horizontalSize = (_width / 2f + 1f) / aspectRatio;
+        _cam.orthographicSize = Mathf.Max(verticalSize, horizontalSize);
     }
 
     private void GenerateCells()
@@ -131,9 +157,15 @@ public class Game : MonoBehaviour
         else if (!_gameOver)
         {
             if (Input.GetMouseButtonDown(1))
+            {
+                AudioManager.Instance.PlayClick();
                 Flag();
+            }
             else if (Input.GetMouseButtonDown(0))
+            {
+                AudioManager.Instance.PlayClick();
                 Reveal();
+            }
         }
     }
 
@@ -170,7 +202,7 @@ public class Game : MonoBehaviour
     {
         Debug.Log("Game Over");
         _gameOver = true;
-
+        _onLose?.Invoke();
         cell.revelead = true;
         cell.exploded = true;
 
@@ -234,7 +266,7 @@ public class Game : MonoBehaviour
 
         Debug.Log("YOU WIN");
         _gameOver = true;
-
+        _onWin?.Invoke();
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
@@ -263,5 +295,20 @@ public class Game : MonoBehaviour
     private bool IsValid(int x,int y)
     {
         return x >= 0 && x < _width && y >= 0 && y < _height;
+    }
+}
+
+[System.Serializable]
+public struct GameSettings
+{
+    public int width;
+    public int height;
+    public int mineCount;
+
+    public GameSettings(int w, int h, int mines)
+    {
+        width = w;
+        height = h;
+        mineCount = mines;
     }
 }

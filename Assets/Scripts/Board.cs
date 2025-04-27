@@ -82,4 +82,9 @@ public class Board : MonoBehaviour
             default: return null;
         }
     }
+
+    public void Clear()
+    {
+        tileMap.ClearAllTiles();
+    }
 }
