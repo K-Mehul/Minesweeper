@@ -51,6 +51,7 @@ public class Game : MonoBehaviour
 
     private void NewGame()
     {
+        AudioManager.Instance.StopSound();
         _gameOver = false;
         _state = new Cell[_width, _height];
 

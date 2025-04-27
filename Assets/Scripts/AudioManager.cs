@@ -32,6 +32,12 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void StopSound()
+    {
+        musicSource.Stop();
+        sfxSource.Stop();
+    }
+
     public void PlayClick()
     {
         PlaySound(clickSound);
